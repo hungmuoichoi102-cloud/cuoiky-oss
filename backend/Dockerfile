@@ -54,8 +54,16 @@ RUN echo '<VirtualHost *:80>\n\
 # Enable default site
 RUN a2ensite 000-default
 
-# Create database directory
-RUN mkdir -p /var/www/html/database && chmod -R 775 /var/www/html && chown -R www-data:www-data /var/www/html
+# Copy entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Create database directory with proper permissions
+RUN mkdir -p /var/www/html/database && \
+    mkdir -p /var/www/html && \
+    chmod -R 777 /var/www/html && \
+    chmod -R 777 /var/www/html/database && \
+    chown -R www-data:www-data /var/www/html
 
 # Initialize database
 RUN php /var/www/html/setup-db.php || true
@@ -66,4 +74,5 @@ EXPOSE 80
 # Environment
 ENV APP_ENV=production APP_DEBUG=false
 
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["apache2-foreground"]
