@@ -1,0 +1,41 @@
+# Laravel Backend Ignored Files
+
+# Environment variables
+.env
+.env.backup
+.env.*.php
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Composer
+/vendor/
+composer.lock
+
+# Laravel
+/bootstrap/cache/
+/storage/
+/public/hot
+*.db
+
+# Node
+/node_modules/
+npm-debug.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+storage/logs/
+
+# Database
+*.sqlite
+*.sqlite3
+
+# Misc
+.phpunit.result.cache

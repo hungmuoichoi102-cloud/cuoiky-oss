@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  # Backend service - PHP Apache with SQLite
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: hungmuchoi/todolist-backend:latest
+    container_name: todo-backend
+    ports:
+      - "8000:80"
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+    volumes:
+      - ./backend:/var/www/html
+      - ./backend/database.sqlite:/var/www/html/database.sqlite
+    networks:
+      - todo-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend service - Nginx with React
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: hungmuchoi/todolist-frontend:latest
+    container_name: todo-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - todo-network
+    healthcheck:
+      test:
+        ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  todo-network:
+    driver: bridge
+
+volumes:
+  backend_data:
+    driver: local
