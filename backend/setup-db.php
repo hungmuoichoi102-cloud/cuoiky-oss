@@ -1,11 +1,27 @@
 <?php
 
 $dbPath = __DIR__ . '/database.sqlite';
+$dbDir = dirname($dbPath);
 
 try {
+    // Ensure directory exists with proper permissions
+    if (!is_dir($dbDir)) {
+        mkdir($dbDir, 0777, true);
+    }
+    
+    // Ensure directory is writable
+    if (!is_writable($dbDir)) {
+        chmod($dbDir, 0777);
+    }
+    
     // Create SQLite connection
     $pdo = new PDO('sqlite:' . $dbPath);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // Set file permissions
+    if (file_exists($dbPath)) {
+        chmod($dbPath, 0777);
+    }
     
     echo "Creating todos table...\n";
     
