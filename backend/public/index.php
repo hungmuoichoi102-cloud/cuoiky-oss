@@ -23,13 +23,17 @@ $path = str_replace('/api', '', $path);
 $body = json_decode(file_get_contents('php://input'), true);
 
 try {
-    // Load database connection
-    $dbPath = __DIR__.'/../database.sqlite';
-    if (!file_exists($dbPath)) {
-        throw new Exception('Database file not found. Run: php setup-db.php');
-    }
+    // Load database connection from environment variables
+    $dbHost = getenv('DB_HOST') ?: 'localhost';
+    $dbPort = getenv('DB_PORT') ?: '3306';
+    $dbName = getenv('DB_NAME') ?: 'todolist_db';
+    $dbUser = getenv('DB_USER') ?: 'root';
+    $dbPassword = getenv('DB_PASSWORD') ?: '';
     
-    $pdo = new PDO('sqlite:'.$dbPath);
+    // Create MySQL DSN
+    $dsn = "mysql:host=$dbHost;port=$dbPort;dbname=$dbName;charset=utf8mb4";
+    
+    $pdo = new PDO($dsn, $dbUser, $dbPassword);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     // Simple routing logic

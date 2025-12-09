@@ -1,18 +1,15 @@
-# Backend Dockerfile - PHP with SQLite
+# Backend Dockerfile - PHP with MySQL
 FROM php:8.1-apache
 
 # Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     git \
-    curl \
-    libsqlite3-dev \
-    sqlite3 && \
+    curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Build and enable PDO SQLite extension from source
-RUN docker-php-ext-configure pdo_sqlite && \
-    docker-php-ext-install -j$(nproc) pdo_sqlite
+# Install PHP extensions for MySQL and PDO
+RUN docker-php-ext-install -j$(nproc) mysqli pdo pdo_mysql
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -58,15 +55,10 @@ RUN a2ensite 000-default
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Create database directory with proper permissions
-RUN mkdir -p /var/www/html/database && \
-    mkdir -p /var/www/html && \
+# Create directory with proper permissions
+RUN mkdir -p /var/www/html && \
     chmod -R 777 /var/www/html && \
-    chmod -R 777 /var/www/html/database && \
     chown -R www-data:www-data /var/www/html
-
-# Initialize database
-RUN php /var/www/html/setup-db.php || true
 
 # Expose port
 EXPOSE 80
