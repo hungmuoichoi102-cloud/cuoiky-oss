@@ -11,7 +11,7 @@ services:
       MYSQL_USER: todolist_user
       MYSQL_PASSWORD: todolist_password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -63,7 +63,7 @@ services:
     image: hungmuchoi/todolist-frontend:latest
     container_name: todo-frontend
     ports:
-      - "80:80"
+      - "81:80"
     depends_on:
       - backend
     networks:
